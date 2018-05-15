@@ -27,10 +27,13 @@ class testHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
             self.send_header('Content-type', 'text/html')
             self.end_headers()
             buscador = self.path.split("=")
-            if buscador[2] != "":
-                medicamento = buscador[1] + "=" + buscador[2]
-            else:
-                medicamento = buscador[1] + "=" + "10"
+            try:
+                if buscador[2] != "":
+                    medicamento = buscador[1] + "=" + buscador[2]
+                else:
+                    medicamento = buscador[1] + "=" + "10"
+            except IndexError:
+                medicamento = buscador[1] + "&limit=10"
 
             headers = {'User-Agent': 'http-client'}
 
@@ -56,10 +59,13 @@ class testHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
             self.send_header('Content-type', 'text/html')
             self.end_headers()
             buscador = self.path.split("=")
-            if buscador[2] != "":
-                medicamento = buscador[1] + "=" + buscador[2]
-            else:
-                medicamento = buscador[1] + "=" + "10"
+            try:
+                if buscador[2] != "":
+                    medicamento = buscador[1] + "=" + buscador[2]
+                else:
+                    medicamento = buscador[1] + "=" + "10"
+            except IndexError:
+                medicamento = buscador[1] + "&limit=10"
 
             headers = {'User-Agent': 'http-client'}
 
@@ -161,19 +167,15 @@ class testHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 
         elif "secret" in self.path:
             self.send_response(401)
-            self.send_header("WWW-Authenticate", "Basic realm = DENIED")
+            self.send_header('WWW-Authenticate', "Basic realm = DENIED")
             self.end_headers()
 
-        #elif "redirect"  in self.path:
-            #self.send_header("location : http://localhost:8000/")
-            #self.send_header('Content-type', 'text/html')
-            #self.send_response(200)
-            #self.end_headers()
-#THIS IS HOW I DID THE REDIRECT BUT I HAD AN ERROR
-#THE OTHER 2 FAILURES ARE BECAUSE OF THE DEFAULT VALUES WE HAVE TO PUT, MINE WORK BUT I DO NOT KNOW WHY THE FAILURES ARE THERE
+        elif "redirect"  in self.path:
+            self.send_response(301)
+            self.send_header("Location","http://localhost:8000")
+            self.end_headers()
         else:
             self.send_response(404)
-            self.send_header('Content-type', 'text/html')
             self.end_headers()
             with open("error.html", "r") as s:
                 error = s.read()
